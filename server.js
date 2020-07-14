@@ -11,10 +11,25 @@ const db = require('./data/dbConfig.js');
 //crud
 
 server.post('/api/cars', (req, res) => {
-	console.log(req.body);
 
 	db('car-dealer')
-		.insert(req.body, 'vin')
+		.insert(req.body)
+		.then((returned) => {
+            if (returned > 0) {
+			res.status(201).json(returned);
+            } else {
+                res.json({message: "Record not created.", returnedValue: returned});
+            }
+
+		})
+		.catch((err) => {
+			res.status(500).json({message: "Server error. Check if VIN is unique! ", error: err});
+		});
+});
+
+server.get('/api/cars', (req, res) => {
+
+	db('car-dealer')
 		.then((returned) => {
 			res.status(201).json(returned);
 		})
